@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\RoleName;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -46,5 +47,47 @@ class User extends Authenticatable implements PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles()->where('name', $roleName)->exists();
+    }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(RoleName::ADMIN->value);
+    }
+
+    public function isVendor(): bool
+    {
+        return $this->hasRole(RoleName::VENDOR->value);
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->hasRole(RoleName::CUSTOMER->value);
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->hasRole(RoleName::STAFF->value);
+    }
+
+    public function permissions()
+    {
+        return $this->roles->with('permissions')->get()
+         ->map(function ($role) {
+                return $role->permissions->pluck('name');
+            })->flatten()->values()->unique()->toArray();
+    }
+
+     public function hasPermission(string $permission): bool
+    {
+        return in_array($permission, $this->permissions(), true);
     }
 }

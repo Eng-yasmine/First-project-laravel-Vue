@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleName;
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +15,23 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+
+    }
+
+    protected function createRole(RoleName $role , Collection $permissions)
+    {
+        $role = Role::create(['name' => $role->value]);
+
+        $role->permissions()->sync($permissions);
+    }
+
+    protected function createAdminRole() : void
+    {
+        $permissions = Permission::query()
+        ->where('name', 'like', '%user.%')
+        ->orWhere('name', 'like', '%restaurant.%')
+        ->pluck('id');
+
+        $this->createRole(RoleName::ADMIN, $permissions);
     }
 }
