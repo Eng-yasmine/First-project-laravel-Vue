@@ -58,6 +58,11 @@ class User extends Authenticatable implements PasskeyUser
         return $this->belongsToMany(Role::class);
     }
 
+    public function restaurants()
+    {
+        return $this->hasone(Restaurant::class, 'owner_id');
+    }
+
     public function isAdmin(): bool
     {
         return $this->hasRole(RoleName::ADMIN->value);
