@@ -10,3 +10,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Route::inertia('/settings','settings')->name('settings');
 require __DIR__.'/settings.php';
+require __DIR__.'/admin.php';

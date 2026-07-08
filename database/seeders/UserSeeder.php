@@ -25,4 +25,20 @@ class UserSeeder extends Seeder
             'password' => bcrypt('password'),
         ])->roles()->sync(Role::where('name' , RoleName::ADMIN->value)->first());
     }
+
+    public function createVendorUser()
+    {
+      $vendor = User::create([
+            'name'     => 'Vendor User',
+            'email'    => 'vendor@vendor.com',
+            'password' => bcrypt('password'),
+        ]);
+        $vendor->roles()->sync(Role::where('name' , RoleName::VENDOR->value)->first());
+
+        $vendor->restaurants()->create([
+            'name' => 'Vendor Restaurant',
+            'address' => '123 Vendor St',
+            'phone' => '123-456-7890',
+        ]);
+    }
 }
